@@ -3,9 +3,9 @@ Bank management system 🏦💰, includes the basic functions, create user, depo
 
 Technologies: 🧰
 
-Eclipse.
-Java Swing.
-My SQL Workbench.
+Flutter
+SQLite
+
 Structure 📓
 
 Creation of CLasses 💻
@@ -24,6 +24,6 @@ Pin Change *️⃣Change account pin if needed.
 
 Mini Statement (40 min) ℹ️: Offers information about the transactions.
 
-Database Connection (MYSQL - 1h 30 min) 💿:
+Database Connection (SQLite - 1h 30 min) 💿:
 
-MYSQL will store the data of the application.
+SQLite will store the data of the application inside the mobile phone.
