@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'database_helper.dart'; // <--- IMPORTANTE: Conexión a BD
+import 'database_helper.dart';
 
 class PinChangePage extends StatefulWidget {
   final String pin;
@@ -13,149 +13,163 @@ class PinChangePage extends StatefulWidget {
 class _PinChangePageState extends State<PinChangePage> {
   final TextEditingController pin1Controller = TextEditingController();
   final TextEditingController pin2Controller = TextEditingController();
+  
+  bool isProcessing = false; // Para evitar doble clic
 
   @override
   Widget build(BuildContext context) {
+    // Color corporativo
+    final Color bankPrimaryColor = Colors.blue.shade900;
+
     return Scaffold(
-      body: Stack(
-        children: [
-          /// Background image
-          SizedBox.expand(
-            child: Image.asset(
-              "assets/atm2.png",
-              fit: BoxFit.cover,
-            ),
-          ),
-
-          /// Título Principal
-          const Positioned(
-            top: 180,
-            left: 430,
-            child: Text(
-              "CAMBIO DE PIN",
-              style: TextStyle(
+      // 1. FONDO SÓLIDO AZUL
+      backgroundColor: bankPrimaryColor,
+      
+      // Bloqueamos la interacción mientras se guarda
+      body: AbsorbPointer(
+        absorbing: isProcessing,
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Container(
+              // 2. TARJETA BLANCA CENTRAL
+              width: 450,
+              padding: const EdgeInsets.all(30),
+              decoration: BoxDecoration(
                 color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 15,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
               ),
-            ),
-          ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  
+                  /// CABECERA
+                  Image.asset(
+                    "assets/bank.png",
+                    width: 70,
+                    height: 70,
+                    errorBuilder: (c, e, s) => Icon(Icons.lock_reset, size: 70, color: bankPrimaryColor),
+                  ),
+                  const SizedBox(height: 15),
+                  
+                  Text(
+                    "CAMBIO DE PIN",
+                    style: TextStyle(
+                      color: bankPrimaryColor,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    "Por seguridad, no comparta su clave",
+                    style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+                  ),
 
-          /// Etiqueta 1: Nuevo PIN
-          const Positioned(
-            top: 225,
-            left: 430,
-            child: Text(
-              "Nuevo PIN:",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-              ),
-            ),
-          ),
+                  const SizedBox(height: 30),
 
-          /// Campo 1
-          Positioned(
-            top: 225,
-            left: 600,
-            child: SizedBox(
-              width: 180,
-              child: TextField(
-                controller: pin1Controller,
-                obscureText: true,
-                keyboardType: TextInputType.number,
-                maxLength: 4,
-                style: const TextStyle(color: Colors.white, fontSize: 22),
-                decoration: const InputDecoration(
-                  filled: true,
-                  fillColor: Color(0xFF417D80),
-                  border: InputBorder.none,
-                  counterText: "",
-                ),
-              ),
-            ),
-          ),
+                  /// CAMPO 1: NUEVO PIN
+                  TextField(
+                    controller: pin1Controller,
+                    obscureText: true,
+                    keyboardType: TextInputType.number,
+                    maxLength: 4,
+                    decoration: _inputDecoration("Nuevo PIN").copyWith(
+                      prefixIcon: const Icon(Icons.lock_outline),
+                    ),
+                  ),
 
-          /// Etiqueta 2: Confirmar
-          const Positioned(
-            top: 260,
-            left: 430,
-            child: Text(
-              "Confirmar PIN:",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-              ),
-            ),
-          ),
+                  const SizedBox(height: 20),
 
-          /// Campo 2
-          Positioned(
-            top: 260,
-            left: 600,
-            child: SizedBox(
-              width: 180,
-              child: TextField(
-                controller: pin2Controller,
-                obscureText: true,
-                keyboardType: TextInputType.number,
-                maxLength: 4,
-                style: const TextStyle(color: Colors.white, fontSize: 22),
-                decoration: const InputDecoration(
-                  filled: true,
-                  fillColor: Color(0xFF417D80),
-                  border: InputBorder.none,
-                  counterText: "",
-                ),
-              ),
-            ),
-          ),
+                  /// CAMPO 2: CONFIRMAR PIN
+                  TextField(
+                    controller: pin2Controller,
+                    obscureText: true,
+                    keyboardType: TextInputType.number,
+                    maxLength: 4,
+                    decoration: _inputDecoration("Confirmar Nuevo PIN").copyWith(
+                      prefixIcon: const Icon(Icons.lock_reset),
+                    ),
+                  ),
 
-          /// Botón CAMBIAR (CHANGE)
-          Positioned(
-            top: 362,
-            left: 700,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF417D80),
-                foregroundColor: Colors.white,
-                fixedSize: const Size(150, 35),
-              ),
-              onPressed: changePin,
-              child: const Text("CAMBIAR"),
-            ),
-          ),
+                  const SizedBox(height: 30),
 
-          /// Botón VOLVER (BACK)
-          Positioned(
-            top: 406,
-            left: 700,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF417D80),
-                foregroundColor: Colors.white,
-                fixedSize: const Size(150, 35),
+                  /// BOTONES DE ACCIÓN
+                  Row(
+                    children: [
+                      // Botón VOLVER
+                      Expanded(
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            side: const BorderSide(color: Colors.red),
+                            foregroundColor: Colors.red,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text("CANCELAR"),
+                        ),
+                      ),
+                      
+                      const SizedBox(width: 15),
+                      
+                      // Botón CAMBIAR
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: bankPrimaryColor,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
+                          onPressed: changePin,
+                          child: isProcessing 
+                             ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                             : const Text("CONFIRMAR"),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text("VOLVER"),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
 
+  // Helper para el estilo de los inputs
+  InputDecoration _inputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      filled: true,
+      fillColor: Colors.grey.shade50,
+      counterText: "", // Oculta el contador 0/4
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.grey.shade300)),
+      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.grey.shade300)),
+      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.blue.shade900, width: 2)),
+    );
+  }
+
   // ==========================================
-  // LÓGICA CAMBIO DE PIN CON BASE DE DATOS
+  // LÓGICA DE CAMBIO DE PIN
   // ==========================================
 
-  void changePin() async { // <--- ASYNC
+  void changePin() async {
+    FocusScope.of(context).unfocus();
+
     String p1 = pin1Controller.text.trim();
     String p2 = pin2Controller.text.trim();
 
-    // Validaciones básicas
+    // Validaciones
     if (p1.isEmpty || p2.isEmpty) {
       showAlert("Por favor, rellene ambos campos.");
       return;
@@ -172,38 +186,103 @@ class _PinChangePageState extends State<PinChangePage> {
     }
 
     if (int.tryParse(p1) == null) {
-      showAlert("El PIN debe contener solo dígitos.");
+      showAlert("El PIN debe contener solo números.");
       return;
     }
 
-    // --- GUARDAR EN BASE DE DATOS ---
-    // Actualizamos el PIN antiguo (widget.pin) por el nuevo (p1)
-    await DatabaseHelper.instance.updatePin(widget.pin, p1);
-    // --------------------------------
+    if (p1 == widget.pin) {
+      showAlert("El nuevo PIN no puede ser igual al actual.");
+      return;
+    }
 
-    if (!mounted) return;
-
-    showAlert("PIN cambiado correctamente.\nPor favor, inicie sesión de nuevo.", onOk: () {
-      // Al cambiar el PIN, la sesión actual ya no es válida.
-      // Volvemos a la pantalla de Login (la primera ruta).
-      Navigator.popUntil(context, (route) => route.isFirst);
+    setState(() {
+      isProcessing = true;
     });
+
+    try {
+      // Actualizar en BD
+      await DatabaseHelper.instance.updatePin(widget.pin, p1);
+      
+      if (!mounted) return;
+
+      // ÉXITO
+      showSuccessAlert();
+
+    } catch (e) {
+      if (!mounted) return;
+      if (e.toString().contains("UNIQUE constraint failed") || e.toString().contains("PRIMARY KEY")) {
+        showAlert("Este PIN no está disponible. Por favor elija otro.");
+      } else {
+        showAlert("Error al cambiar el PIN: $e");
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          isProcessing = false;
+        });
+      }
+    }
   }
 
-  void showAlert(String message, {VoidCallback? onOk}) {
+  // Alerta de Éxito
+  void showSuccessAlert() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Column(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.green, size: 50),
+            const SizedBox(height: 10),
+            Text("¡PIN Actualizado!", style: TextStyle(color: Colors.blue.shade900, fontWeight: FontWeight.bold)),
+          ],
+        ),
+        content: const Text(
+          "Su clave ha sido modificada correctamente.\nPor seguridad, debe iniciar sesión de nuevo.",
+          textAlign: TextAlign.center,
+        ),
+        actions: [
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue.shade900,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              onPressed: () {
+                // Volver al Login limpiando pila
+                Navigator.popUntil(context, (route) => route.isFirst);
+              },
+              child: const Text("IR AL INICIO DE SESIÓN"),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  // Alerta de Error Generico
+  void showAlert(String message) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: Colors.white,
-        title: const Text("Aviso"),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: Colors.blue.shade900),
+            const SizedBox(width: 10),
+            Text("Aviso", style: TextStyle(color: Colors.blue.shade900, fontWeight: FontWeight.bold)),
+          ],
+        ),
         content: Text(message),
         actions: [
           TextButton(
-            child: const Text("ACEPTAR"),
-            onPressed: () {
-              Navigator.pop(context);
-              if (onOk != null) onOk();
-            },
+            child: const Text("ENTENDIDO"),
+            onPressed: () => Navigator.pop(context),
           )
         ],
       ),
