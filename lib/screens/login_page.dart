@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'database_helper.dart';
 import 'main_class.dart';
 import 'signup_class.dart';
-import 'delete_account_page.dart'; // <--- IMPORTAR LA NUEVA PÁGINA
+import 'delete_account_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -30,10 +30,6 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               
-              // Título / Logo superior (Opcional)
-              // const Text("BANCO TECHCODER", style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
-              // const SizedBox(height: 20),
-
               // Tarjeta Blanca Central
               Container(
                 width: 450, // Ancho limitado para PC
@@ -67,11 +63,13 @@ class _LoginPageState extends State<LoginPage> {
                         fontWeight: FontWeight.bold,
                         color: bankPrimaryColor,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 5),
                     Text(
                       "Bienvenido, por favor identifíquese",
                       style: TextStyle(color: Colors.grey.shade600),
+                      textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 30),
 
@@ -79,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                     TextField(
                       controller: cardController,
                       keyboardType: TextInputType.number,
-                      maxLength: 16, // <--- LÍMITE DE 16 DÍGITOS
+                      maxLength: 16,
                       decoration: _inputDecoration("Nº de Tarjeta", Icons.credit_card),
                     ),
                     
@@ -90,38 +88,16 @@ class _LoginPageState extends State<LoginPage> {
                       controller: pinController,
                       keyboardType: TextInputType.number,
                       obscureText: true,
-                      maxLength: 4, // <--- LÍMITE DE 4 DÍGITOS (Estándar PIN)
+                      maxLength: 4,
                       decoration: _inputDecoration("Clave Personal (PIN)", Icons.lock),
                     ),
 
                     const SizedBox(height: 30),
 
-                    // BOTONES DE ACCIÓN
+                    // BOTONES DE ACCIÓN (INTERCAMBIADOS)
                     Row(
                       children: [
-                        // BOTÓN ELIMINAR CUENTA (Antes era Borrar Texto)
-                        Expanded(
-                          child: OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 15),
-                              side: const BorderSide(color: Colors.red), // Borde Rojo
-                              foregroundColor: Colors.red,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                            ),
-                            onPressed: () {
-                              // Navegar a la pantalla de eliminar cuenta
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (_) => const DeleteAccountPage()),
-                              );
-                            },
-                            child: const Text("ELIMINAR"),
-                          ),
-                        ),
-                        
-                        const SizedBox(width: 15),
-
-                        // BOTÓN ACCEDER
+                        // 1. BOTÓN ACCEDER (Izquierda)
                         Expanded(
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
@@ -135,6 +111,27 @@ class _LoginPageState extends State<LoginPage> {
                             child: const Text("ACCEDER"),
                           ),
                         ),
+
+                        const SizedBox(width: 15),
+
+                        // 2. BOTÓN ELIMINAR CUENTA (Derecha)
+                        Expanded(
+                          child: OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 15),
+                              side: const BorderSide(color: Colors.red), // Borde Rojo
+                              foregroundColor: Colors.red,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => DeleteAccountPage()),
+                              );
+                            },
+                            child: const Text("ELIMINAR"),
+                          ),
+                        ),
                       ],
                     ),
 
@@ -142,19 +139,22 @@ class _LoginPageState extends State<LoginPage> {
                     const Divider(),
                     const SizedBox(height: 10),
 
-                    // Enlace Registro
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const SignupPage()),
-                        );
-                      },
-                      child: Text(
-                        "¿No tiene cuenta? REGÍSTRESE AQUÍ",
-                        style: TextStyle(
-                          color: bankPrimaryColor,
-                          fontWeight: FontWeight.bold,
+                    // Enlace Registro (CENTRADO)
+                    Center(
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const SignupPage()),
+                          );
+                        },
+                        child: Text(
+                          "¿No tiene cuenta? REGÍSTRESE AQUÍ",
+                          textAlign: TextAlign.center, // Asegura centrado si hay 2 líneas
+                          style: TextStyle(
+                            color: bankPrimaryColor,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -172,7 +172,7 @@ class _LoginPageState extends State<LoginPage> {
   InputDecoration _inputDecoration(String label, IconData icon) {
     return InputDecoration(
       labelText: label,
-      counterText: "", // Ocultar el contador de caracteres (ej: 0/16)
+      counterText: "",
       prefixIcon: Icon(icon, color: Colors.grey.shade600),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
@@ -199,10 +199,7 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     try {
-      // Verificar usuario en BD
       final db = DatabaseHelper.instance;
-      // Primero buscamos el usuario por PIN (ya que tu tabla usa PIN como PK)
-      // Lo ideal es verificar que la tarjeta y el PIN coincidan
       final userList = await (await db.database).query(
         'users', 
         where: 'card_number = ? AND pin = ?', 
@@ -211,7 +208,6 @@ class _LoginPageState extends State<LoginPage> {
 
       if (userList.isNotEmpty) {
         if (!mounted) return;
-        // Login exitoso
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => MainClass(pin: pin)),
