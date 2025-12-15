@@ -104,23 +104,7 @@ class _PinChangePageState extends State<PinChangePage> {
                   /// BOTONES DE ACCIÓN
                   Row(
                     children: [
-                      // Botón VOLVER
-                      Expanded(
-                        child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 15),
-                            side: const BorderSide(color: Colors.red),
-                            foregroundColor: Colors.red,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          ),
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text("CANCELAR"),
-                        ),
-                      ),
-                      
-                      const SizedBox(width: 15),
-                      
-                      // Botón CAMBIAR
+                      // 1. Botón CAMBIAR/CONFIRMAR
                       Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
@@ -133,6 +117,22 @@ class _PinChangePageState extends State<PinChangePage> {
                           child: isProcessing 
                              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                              : const Text("CONFIRMAR"),
+                        ),
+                      ),
+
+                      const SizedBox(width: 15),
+
+                      // 2. Botón VOLVER/CANCELAR
+                      Expanded(
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            side: const BorderSide(color: Colors.red),
+                            foregroundColor: Colors.red,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text("CANCELAR"),
                         ),
                       ),
                     ],
@@ -159,8 +159,7 @@ class _PinChangePageState extends State<PinChangePage> {
     );
   }
 
-    // Lógica de Cambio de Pin
-
+  // Lógica de Cambio de Pin
   void changePin() async {
     FocusScope.of(context).unfocus();
 

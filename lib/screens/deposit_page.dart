@@ -20,7 +20,7 @@ class _DepositPageState extends State<DepositPage> {
     final Color bankPrimaryColor = Colors.blue.shade900;
 
     return Scaffold(
-      // 1. Fondo sólido azul (sin imagen de fondo para evitar errores visuales)
+      // 1. Fondo sólido azul
       backgroundColor: bankPrimaryColor,
       
       // Bloquear la pantalla si se está procesando
@@ -95,25 +95,10 @@ class _DepositPageState extends State<DepositPage> {
 
                   const SizedBox(height: 40),
 
-                  /// Botones de Acción
+                  /// Botones de Acción 
                   Row(
                     children: [
-                      // Botón VOLVER
-                      Expanded(
-                        child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 15),
-                            side: const BorderSide(color: Colors.red),
-                            foregroundColor: Colors.red,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          ),
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text("CANCELAR"),
-                        ),
-                      ),
-                      const SizedBox(width: 15),
-                      
-                      // Botón INGRESAR
+                      // 1. Botón INGRESAR 
                       Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
@@ -126,6 +111,22 @@ class _DepositPageState extends State<DepositPage> {
                           child: isProcessing 
                               ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)) 
                               : const Text("INGRESAR"),
+                        ),
+                      ),
+                      
+                      const SizedBox(width: 15),
+
+                      // 2. Botón CANCELAR 
+                      Expanded(
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            side: const BorderSide(color: Colors.red),
+                            foregroundColor: Colors.red,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text("CANCELAR"),
                         ),
                       ),
                     ],

@@ -106,24 +106,7 @@ class _WithdrawPageState extends State<WithdrawPage> {
                   /// Botones
                   Row(
                     children: [
-                      // Botón VOLVER (CANCELAR)
-                      Expanded(
-                        child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 15),
-                            side: const BorderSide(color: Colors.red),
-                            foregroundColor: Colors.red,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          ),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Text("CANCELAR"),
-                        ),
-                      ),
-                      const SizedBox(width: 15),
-
-                      // Botón RETIRAR
+                      // 1. Botón RETIRAR 
                       Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
@@ -136,6 +119,24 @@ class _WithdrawPageState extends State<WithdrawPage> {
                           child: isProcessing
                               ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                               : const Text("RETIRAR"),
+                        ),
+                      ),
+                      
+                      const SizedBox(width: 15),
+
+                      // 2. Botón CANCELAR 
+                      Expanded(
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            side: const BorderSide(color: Colors.red),
+                            foregroundColor: Colors.red,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text("CANCELAR"),
                         ),
                       ),
                     ],
