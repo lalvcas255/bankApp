@@ -24,7 +24,6 @@ dependencies:
   path: ^1.9.0
 
   # --- UTILIDADES ---
-  # CAMBIO AQUÍ: Actualizado de ^0.19.0 a ^0.20.0 para evitar el error
   intl: ^0.20.0 
 
 dev_dependencies:
@@ -33,6 +32,7 @@ dev_dependencies:
   
   flutter_lints: ^4.0.0
   
+  # Librería para generar iconos
   flutter_launcher_icons: ^0.14.1
 
 flutter:
@@ -41,8 +41,11 @@ flutter:
   assets:
     - assets/
 
+# --- CONFIGURACIÓN DE ICONOS ---
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
   image_path: "assets/bank.png"
   min_sdk_android: 21
+  # Esto quita la transparencia para iOS (Apple no permite iconos transparentes)
+  remove_alpha_ios: true
