@@ -1,119 +1,132 @@
 import 'package:flutter/material.dart';
+import 'database_helper.dart';
 
-class WithdrawPage extends StatefulWidget {
+class FastCashPage extends StatefulWidget {
   final String pin;
 
-  const WithdrawPage({super.key, required this.pin});
+  const FastCashPage({super.key, required this.pin});
 
   @override
-  State<WithdrawPage> createState() => _WithdrawPageState();
+  State<FastCashPage> createState() => _FastCashPageState();
 }
 
-class _WithdrawPageState extends State<WithdrawPage> {
-  final TextEditingController amountController = TextEditingController();
+class _FastCashPageState extends State<FastCashPage> {
+  bool isProcessing = false;
 
-  // Balance simulado en Euros
-  int mockBalance = 50000; 
-  // ⚠️ IMPORTANTE:
-  // En producción, esto debe venir de tu base de datos (MySQL/Firebase).
+  // Cantidades rápidas
+  final List<double> quickAmounts = [20, 50, 100, 200, 500, 1000];
 
   @override
   Widget build(BuildContext context) {
+    // Color corporativo
+    final Color bankPrimaryColor = Colors.blue.shade900;
+
     return Scaffold(
-      body: Stack(
-        children: [
-          /// Background
-          SizedBox.expand(
-            child: Image.asset(
-              "assets/atm2.png",
-              fit: BoxFit.cover,
-            ),
-          ),
+      // 1. Fondo sólido azul
+      backgroundColor: bankPrimaryColor,
 
-          /// Foreground content
-          const Positioned(
-            top: 180,
-            left: 460,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "LÍMITE MÁXIMO DE RETIRADA: 10.000 €",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  "POR FAVOR, INTRODUZCA LA CANTIDAD",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-          ),
+      body: AbsorbPointer(
+        absorbing: isProcessing,
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Container(
+              width: 550, // Un poco más ancho para que quepan bien los botones
+              padding: const EdgeInsets.all(30),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 15,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  /// Icono decorativo (Rayo o Billete)
+                  Icon(Icons.flash_on_rounded, size: 60, color: bankPrimaryColor),
+                  const SizedBox(height: 15),
 
-          /// Input Field
-          Positioned(
-            top: 260,
-            left: 460,
-            child: SizedBox(
-              width: 320,
-              child: TextField(
-                controller: amountController,
-                keyboardType: TextInputType.number,
-                style: const TextStyle(color: Colors.white, fontSize: 22),
-                decoration: const InputDecoration(
-                  filled: true,
-                  fillColor: Color(0xFF417D80),
-                  border: InputBorder.none,
-                  hintText: "Cantidad",
-                  hintStyle: TextStyle(color: Colors.white70),
-                  suffixText: '€',
-                  suffixStyle: TextStyle(color: Colors.white, fontSize: 22),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                ),
+                  /// Título
+                  Text(
+                    "EFECTIVO RÁPIDO",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: bankPrimaryColor,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  const Text(
+                    "Seleccione una cantidad para retirar al instante",
+                    style: TextStyle(color: Colors.grey),
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  /// GRID DE BOTONES DE CANTIDAD
+                  Wrap(
+                    spacing: 15, // Espacio horizontal entre botones
+                    runSpacing: 15, // Espacio vertical entre filas
+                    alignment: WrapAlignment.center,
+                    children: quickAmounts.map((amount) {
+                      return SizedBox(
+                        width: 140, // Ancho fijo por botón
+                        height: 50,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: bankPrimaryColor,
+                            foregroundColor: Colors.white,
+                            elevation: 3,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          onPressed: isProcessing ? null : () => withdrawQuickCash(amount),
+                          child: Text(
+                            "${amount.toStringAsFixed(0)} €",
+                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+
+                  const SizedBox(height: 40),
+
+                  /// Botón VOLVER
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        side: const BorderSide(color: Colors.red),
+                        foregroundColor: Colors.red,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text("CANCELAR"),
+                    ),
+                  ),
+
+                  // Indicador de carga integrado visualmente (opcional)
+                  if (isProcessing)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: CircularProgressIndicator(color: bankPrimaryColor),
+                    ),
+                ],
               ),
             ),
           ),
-
-          /// Buttons
-          // Botón RETIRAR
-          Positioned(
-            top: 362,
-            left: 700,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF417D80),
-                foregroundColor: Colors.white,
-                fixedSize: const Size(150, 35),
-              ),
-              onPressed: withdrawMoney,
-              child: const Text("RETIRAR"),
-            ),
-          ),
-
-          // Botón VOLVER
-          Positioned(
-            top: 406,
-            left: 700,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF417D80),
-                foregroundColor: Colors.white,
-                fixedSize: const Size(150, 35),
-              ),
-              onPressed: () {
-                // Cambiado a Navigator.pop()
-                Navigator.pop(context);
-              },
-              child: const Text("VOLVER"),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -122,70 +135,117 @@ class _WithdrawPageState extends State<WithdrawPage> {
   // LÓGICA DE RETIRADA
   // ==========================================
 
-  void withdrawMoney() {
-    String text = amountController.text.trim();
-
-    if (text.isEmpty) {
-      alert("Por favor, introduzca la cantidad a retirar.");
-      return;
-    }
-
-    int amount = int.tryParse(text) ?? 0;
-
-    if (amount <= 0) {
-      alert("Cantidad no válida.");
-      return;
-    }
-
-    if (amount > 10000) {
-      alert("El retiro máximo permitido es de 10.000 €");
-      return;
-    }
-
-    if (amount > mockBalance) {
-      alert("Saldo insuficiente.");
-      return;
-    }
-
-    // Simulación de retirada
-    // UPDATE bank SET balance = balance - amount WHERE pin = ...
+  Future<void> withdrawQuickCash(double amount) async {
     setState(() {
-      mockBalance -= amount;
+      isProcessing = true;
     });
 
-    alert("Retirada de $amount € realizada con éxito.", onOk: () {
-      // Cambiado a Navigator.pop()
-      Navigator.pop(context);
-    });
+    try {
+      // 1. Verificar saldo
+      double currentBalance = await DatabaseHelper.instance.getBalance(widget.pin);
+
+      if (!mounted) return;
+
+      if (amount > currentBalance) {
+        // Error de saldo
+        showAlert("Saldo insuficiente.\n\nSu saldo actual es: ${currentBalance.toStringAsFixed(2)} €");
+      } else {
+        // 2. Realizar transacción
+        await DatabaseHelper.instance.addTransaction(
+          widget.pin,
+          'Withdrawal', // Usamos Withdrawal para que cuente como retiro
+          amount,
+        );
+
+        if (!mounted) return;
+
+        // Éxito
+        showSuccessAlert("Retirada rápida de ${amount.toStringAsFixed(0)} € realizada con éxito.");
+      }
+    } catch (e) {
+      if (!mounted) return;
+      showAlert("Error del sistema: $e");
+    } finally {
+      if (mounted) {
+        setState(() {
+          isProcessing = false;
+        });
+      }
+    }
   }
 
   // ==========================================
-  // Alert Dialog
+  // ALERTAS DE DISEÑO
   // ==========================================
 
-  void alert(String msg, {VoidCallback? onOk}) {
+  void showAlert(String msg) {
+    final Color bankPrimaryColor = Colors.blue.shade900;
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (_) => AlertDialog(
         backgroundColor: Colors.white,
-        title: const Text("Aviso"),
-        content: Text(msg),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: bankPrimaryColor, size: 28),
+            const SizedBox(width: 10),
+            Text("Aviso", style: TextStyle(color: bankPrimaryColor, fontWeight: FontWeight.bold)),
+          ],
+        ),
+        content: Text(msg, style: TextStyle(color: Colors.grey.shade700, fontSize: 16)),
         actions: [
-          TextButton(
-            child: const Text("ACEPTAR"),
-            onPressed: () {
-              Navigator.pop(context);
-              if (onOk != null) onOk();
-            },
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: bankPrimaryColor,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              onPressed: () => Navigator.pop(context),
+              child: const Text("ENTENDIDO"),
+            ),
           )
         ],
       ),
     );
   }
 
-  @override
-  void dispose() {
-    amountController.dispose();
-    super.dispose();
+  void showSuccessAlert(String msg) {
+    final Color bankPrimaryColor = Colors.blue.shade900;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Column(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.green, size: 50),
+            const SizedBox(height: 10),
+            Text("Operación Exitosa", style: TextStyle(color: bankPrimaryColor, fontWeight: FontWeight.bold)),
+          ],
+        ),
+        content: Text(msg, textAlign: TextAlign.center, style: TextStyle(color: Colors.grey.shade700, fontSize: 16)),
+        actions: [
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: bankPrimaryColor,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              onPressed: () {
+                Navigator.pop(context); // Cierra alerta
+                Navigator.pop(context); // Vuelve al menú
+              },
+              child: const Text("ACEPTAR"),
+            ),
+          )
+        ],
+      ),
+    );
   }
 }

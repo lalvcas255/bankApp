@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'database_helper.dart';
 import 'main_class.dart';
 import 'signup_class.dart';
+import 'delete_account_page.dart'; // <--- IMPORTAR LA NUEVA PÁGINA
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -10,219 +12,224 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  // Controladores
   final TextEditingController cardController = TextEditingController();
   final TextEditingController pinController = TextEditingController();
 
-  void signIn() {
-    String card = cardController.text.trim();
-    String pin = pinController.text.trim();
-
-    if (card == "1234" && pin == "0000") {
-      // CORRECTO: LoginPage SÍ debe usar pushReplacement porque es la pantalla inicial
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => MainClass(pin: pin)),
-      );
-    } else {
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: const Text("Error"),
-          content: const Text("Incorrect Card Number or PIN"),
-          actions: [
-            TextButton(
-              child: const Text("OK"),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ],
-        ),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    // Color corporativo
+    final Color bankPrimaryColor = Colors.blue.shade900;
+
     return Scaffold(
-      body: Stack(
-        children: [
-          /// Fondo
-          SizedBox.expand(
-            child: Image.asset(
-              "assets/backbg.png",
-              fit: BoxFit.cover,
-            ),
-          ),
+      backgroundColor: bankPrimaryColor, // Fondo Azul Sólido
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              
+              // Título / Logo superior (Opcional)
+              // const Text("BANCO TECHCODER", style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+              // const SizedBox(height: 20),
 
-          /// Contenido
-          Center(
-            child: SizedBox(
-              width: 850,
-              height: 480,
-              child: Stack(
-                children: [
-                  /// Imagen banco
-                  Positioned(
-                    top: 10,
-                    left: 350,
-                    child: Image.asset(
+              // Tarjeta Blanca Central
+              Container(
+                width: 450, // Ancho limitado para PC
+                padding: const EdgeInsets.all(30),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 15,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    // Icono del Banco
+                    Image.asset(
                       "assets/bank.png",
-                      width: 100,
-                      height: 100,
+                      width: 80,
+                      height: 80,
+                      errorBuilder: (c, e, s) => Icon(Icons.account_balance, size: 80, color: bankPrimaryColor),
                     ),
-                  ),
-
-                  /// Imagen tarjeta
-                  Positioned(
-                    bottom: 10,
-                    right: 20,
-                    child: Image.asset(
-                      "assets/card.png",
-                      width: 100,
-                      height: 100,
-                    ),
-                  ),
-
-                  /// Texto principal
-                  const Positioned(
-                    top: 125,
-                    left: 230,
-                    child: Text(
-                      "WELCOME TO ATM",
+                    const SizedBox(height: 10),
+                    
+                    Text(
+                      "CAJERO AUTOMÁTICO",
                       style: TextStyle(
-                        fontSize: 38,
-                        color: Colors.white,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
+                        color: bankPrimaryColor,
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 5),
+                    Text(
+                      "Bienvenido, por favor identifíquese",
+                      style: TextStyle(color: Colors.grey.shade600),
+                    ),
+                    const SizedBox(height: 30),
 
-                  /// Card number
-                  Positioned(
-                    top: 190,
-                    left: 150,
-                    child: Row(
+                    // CAMPO TARJETA (Máximo 16 dígitos)
+                    TextField(
+                      controller: cardController,
+                      keyboardType: TextInputType.number,
+                      maxLength: 16, // <--- LÍMITE DE 16 DÍGITOS
+                      decoration: _inputDecoration("Nº de Tarjeta", Icons.credit_card),
+                    ),
+                    
+                    const SizedBox(height: 20),
+
+                    // CAMPO PIN (Máximo 4 dígitos)
+                    TextField(
+                      controller: pinController,
+                      keyboardType: TextInputType.number,
+                      obscureText: true,
+                      maxLength: 4, // <--- LÍMITE DE 4 DÍGITOS (Estándar PIN)
+                      decoration: _inputDecoration("Clave Personal (PIN)", Icons.lock),
+                    ),
+
+                    const SizedBox(height: 30),
+
+                    // BOTONES DE ACCIÓN
+                    Row(
                       children: [
-                        const Text(
-                          "Card No:",
-                          style: TextStyle(
-                            fontSize: 28,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
+                        // BOTÓN ELIMINAR CUENTA (Antes era Borrar Texto)
+                        Expanded(
+                          child: OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 15),
+                              side: const BorderSide(color: Colors.red), // Borde Rojo
+                              foregroundColor: Colors.red,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                            ),
+                            onPressed: () {
+                              // Navegar a la pantalla de eliminar cuenta
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => const DeleteAccountPage()),
+                              );
+                            },
+                            child: const Text("ELIMINAR"),
                           ),
                         ),
-                        const SizedBox(width: 20),
-                        SizedBox(
-                          width: 230,
-                          child: TextField(
-                            controller: cardController,
-                            decoration: const InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              border: OutlineInputBorder(),
+                        
+                        const SizedBox(width: 15),
+
+                        // BOTÓN ACCEDER
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: bankPrimaryColor,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 15),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                              elevation: 5,
                             ),
+                            onPressed: _login,
+                            child: const Text("ACCEDER"),
                           ),
                         ),
                       ],
                     ),
-                  ),
 
-                  /// PIN
-                  Positioned(
-                    top: 250,
-                    left: 150,
-                    child: Row(
-                      children: [
-                        const Text(
-                          "PIN:",
-                          style: TextStyle(
-                            fontSize: 28,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(width: 68),
-                        SizedBox(
-                          width: 230,
-                          child: TextField(
-                            controller: pinController,
-                            obscureText: true,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                    const SizedBox(height: 20),
+                    const Divider(),
+                    const SizedBox(height: 10),
 
-                  /// Botón SIGN IN
-                  Positioned(
-                    top: 300,
-                    left: 300,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white,
-                        fixedSize: const Size(100, 30),
-                      ),
-                      onPressed: signIn,
-                      child: const Text("SIGN IN"),
-                    ),
-                  ),
-
-                  /// Botón CLEAR
-                  Positioned(
-                    top: 300,
-                    left: 430,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white,
-                        fixedSize: const Size(100, 30),
-                      ),
-                      onPressed: () {
-                        cardController.clear();
-                        pinController.clear();
-                      },
-                      child: const Text("CLEAR"),
-                    ),
-                  ),
-
-                  /// Botón SIGN UP
-                  Positioned(
-                    top: 350,
-                    left: 300,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white,
-                        fixedSize: const Size(230, 30),
-                      ),
+                    // Enlace Registro
+                    TextButton(
                       onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (_) => const SignupPage()),
                         );
                       },
-                      child: const Text("SIGN UP"),
+                      child: Text(
+                        "¿No tiene cuenta? REGÍSTRESE AQUÍ",
+                        style: TextStyle(
+                          color: bankPrimaryColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
-  @override
-  void dispose() {
-    cardController.dispose();
-    pinController.dispose();
-    super.dispose();
+  // Helper para el diseño de los inputs
+  InputDecoration _inputDecoration(String label, IconData icon) {
+    return InputDecoration(
+      labelText: label,
+      counterText: "", // Ocultar el contador de caracteres (ej: 0/16)
+      prefixIcon: Icon(icon, color: Colors.grey.shade600),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(color: Colors.grey.shade600),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(color: Colors.blue.shade900, width: 2),
+      ),
+    );
+  }
+
+  // Lógica de Login
+  void _login() async {
+    String card = cardController.text.trim();
+    String pin = pinController.text.trim();
+
+    if (card.isEmpty || pin.isEmpty) {
+      _showError("Por favor, rellene todos los campos.");
+      return;
+    }
+
+    try {
+      // Verificar usuario en BD
+      final db = DatabaseHelper.instance;
+      // Primero buscamos el usuario por PIN (ya que tu tabla usa PIN como PK)
+      // Lo ideal es verificar que la tarjeta y el PIN coincidan
+      final userList = await (await db.database).query(
+        'users', 
+        where: 'card_number = ? AND pin = ?', 
+        whereArgs: [card, pin]
+      );
+
+      if (userList.isNotEmpty) {
+        if (!mounted) return;
+        // Login exitoso
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => MainClass(pin: pin)),
+        );
+      } else {
+        _showError("Tarjeta o PIN incorrectos.");
+      }
+    } catch (e) {
+      _showError("Error de conexión: $e");
+    }
+  }
+
+  void _showError(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        backgroundColor: Colors.redAccent,
+      ),
+    );
   }
 }

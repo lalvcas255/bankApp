@@ -1,7 +1,6 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; 
-import 'signup2_class.dart';
+import 'package:intl/intl.dart';
+import 'signup2_class.dart'; // <--- IMPORTANTE: Esto dará error hasta que hagas el paso 2
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -11,258 +10,164 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
-  // Controladores
+  final _formKey = GlobalKey<FormState>();
+
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController fnameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController dobController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
   final TextEditingController cityController = TextEditingController();
-  final TextEditingController pinController = TextEditingController();
+  final TextEditingController pinController = TextEditingController(); // CP
   final TextEditingController stateController = TextEditingController();
 
-  // Variables de estado
-  String? gender;
-  String? maritalStatus;
+  String gender = "Masc.";
+  String maritalStatus = "Casado";
+  String formNo = "";
   DateTime? selectedDate;
 
-  // Generador de número de formulario
-  final String formNo = (Random().nextInt(9000) + 1000).toString();
+  @override
+  void initState() {
+    super.initState();
+    formNo = (1000 + DateTime.now().millisecondsSinceEpoch % 9000).toString();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final Color bankPrimaryColor = Colors.blue.shade900;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFDEFFE4), // Color verde claro
-
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-
-            /// Cabecera con Logo y Número
-            Row(
-              children: [
-                Image.asset(
-                  "assets/bank.png",
-                  width: 100,
-                  height: 100,
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: Text(
-                    "SOLICITUD Nº $formNo",
-                    style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
+      backgroundColor: bankPrimaryColor, // Fondo azul sólido
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Container(
+            width: 500,
+            padding: const EdgeInsets.all(30),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 15, offset: const Offset(0, 10)),
+              ],
+            ),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Center(
+                    child: Column(
+                      children: [
+                        Image.asset("assets/bank.png", width: 70, height: 70),
+                        const SizedBox(height: 10),
+                        Text("SOLICITUD Nº $formNo", style: TextStyle(fontSize: 22, color: bankPrimaryColor, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 5),
+                        const Text("Pág. 1: Datos Personales", style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.bold)),
+                      ],
                     ),
                   ),
-                ),
-              ],
-            ),
+                  const SizedBox(height: 25),
 
-            const SizedBox(height: 10),
+                  _buildLabel("Nombre Completo:"),
+                  _buildTextField(nameController, "Ej. Juan Pérez", Icons.person),
+                  const SizedBox(height: 15),
 
-            const Text(
-              "Pág. 1",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
+                  _buildLabel("Sexo:"),
+                  Row(children: [_radioOption("Masc."), const SizedBox(width: 20), _radioOption("Fem.")]),
+                  const SizedBox(height: 15),
 
-            const Text(
-              "Datos Personales",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
+                  _buildLabel("Fecha de Nacimiento:"),
+                  TextFormField(
+                    controller: dobController,
+                    readOnly: true,
+                    validator: (v) => v!.isEmpty ? "Seleccione fecha" : null,
+                    decoration: _inputDecoration("Seleccionar Fecha").copyWith(suffixIcon: const Icon(Icons.calendar_month)),
+                    onTap: _pickDate,
+                  ),
+                  const SizedBox(height: 15),
 
-            const SizedBox(height: 20),
+                  _buildLabel("Email:"),
+                  _buildTextField(emailController, "nombre@correo.com", Icons.email, TextInputType.emailAddress),
+                  const SizedBox(height: 15),
 
-            // --- CAMPOS DE TEXTO ---
+                  _buildLabel("Estado Civil:"),
+                  Row(children: [_radioOptionMarital("Casado"), const SizedBox(width: 20), _radioOptionMarital("Soltero")]),
+                  const SizedBox(height: 20),
+                  const Divider(),
+                  const SizedBox(height: 10),
 
-            _buildTitle("Nombre:"),
-            _buildInput(nameController),
+                  const Text("Dirección", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)),
+                  const SizedBox(height: 10),
+                  _buildLabel("Calle y Número:"),
+                  _buildTextField(addressController, "Ej. Av. Principal 123", Icons.home),
+                  const SizedBox(height: 15),
 
-            _buildTitle("Sexo:"),
-            Row(
-              children: [
-                _radio("Masc.", gender, (v) => setState(() => gender = v)),
-                _radio("Fem.", gender, (v) => setState(() => gender = v)),
-              ],
-            ),
+                  _buildLabel("Ciudad:"),
+                  _buildTextField(cityController, "Ciudad", Icons.location_city),
+                  const SizedBox(height: 15),
 
-            _buildTitle("F. Nacimiento:"),
-            InkWell(
-              onTap: _pickDate,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
-                width: double.infinity, // Ocupar todo el ancho
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black),
-                  color: Colors.white,
-                ),
-                child: Text(
-                  selectedDate == null
-                      ? "Seleccionar Fecha"
-                      // Uso de intl para formato correcto (dd/MM/yyyy)
-                      : DateFormat('dd/MM/yyyy').format(selectedDate!),
-                  style: const TextStyle(fontSize: 16),
-                ),
+                  Row(
+                    children: [
+                      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [_buildLabel("C.P.:"), _buildTextField(pinController, "00000", Icons.map, TextInputType.number)])),
+                      const SizedBox(width: 15),
+                      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [_buildLabel("Provincia:"), _buildTextField(stateController, "Provincia", Icons.terrain)])),
+                    ],
+                  ),
+                  const SizedBox(height: 30),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(backgroundColor: bankPrimaryColor, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 15), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                      onPressed: _next,
+                      child: const Text("SIGUIENTE", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Center(child: TextButton(onPressed: () => Navigator.pop(context), child: Text("CANCELAR", style: TextStyle(color: Colors.grey[600])))),
+                ],
               ),
             ),
-
-            const SizedBox(height: 20),
-
-            _buildTitle("Email:"),
-            _buildInput(emailController),
-
-            _buildTitle("Est. Civil:"),
-            Row(
-              children: [
-                _radio("Casado", maritalStatus, (v) => setState(() => maritalStatus = v)),
-                _radio("Soltero", maritalStatus, (v) => setState(() => maritalStatus = v)),
-              ],
-            ),
-
-            _buildTitle("Dirección:"),
-            _buildInput(addressController),
-
-            _buildTitle("Ciudad:"),
-            _buildInput(cityController),
-
-            _buildTitle("C.P.:"),
-            _buildInput(pinController, keyboard: TextInputType.number),
-
-            _buildTitle("Provincia:"),
-            _buildInput(stateController),
-
-            const SizedBox(height: 30),
-
-            /// Botón SIGUIENTE
-            Align(
-              alignment: Alignment.centerRight,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  foregroundColor: Colors.white,
-                  fixedSize: const Size(120, 40),
-                ),
-                onPressed: _next,
-                child: const Text("SIG."),
-              ),
-            ),
-
-            const SizedBox(height: 40),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // ==========================
-  // WIDGET HELPERS
-  // ==========================
-
-  Widget _buildTitle(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 20, bottom: 5),
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInput(TextEditingController controller, {TextInputType keyboard = TextInputType.text}) {
-    return TextField(
-      controller: controller,
-      keyboardType: keyboard,
-      decoration: const InputDecoration(
-        filled: true,
-        fillColor: Colors.white,
-        border: OutlineInputBorder(),
-        contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-      ),
-    );
-  }
-
-  Widget _radio(String label, String? group, Function(String?) onChanged) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Radio(
-          value: label,
-          groupValue: group,
-          onChanged: onChanged,
-        ),
-        Text(label),
-        const SizedBox(width: 10),
-      ],
-    );
-  }
-
-  // ==========================
-  // ACTIONS
-  // ==========================
-
-  Future<void> _pickDate() async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime(2000),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-      helpText: "SELECCIONAR FECHA",
-      cancelText: "CANCELAR",
-      confirmText: "ACEPTAR",
-      builder: (context, child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            colorScheme: const ColorScheme.light(primary: Colors.black),
           ),
-          child: child!,
-        );
-      },
+        ),
+      ),
     );
+  }
 
-    if (picked != null) {
-      setState(() => selectedDate = picked);
-    }
+  // --- HELPERS ---
+  Widget _buildLabel(String t) => Padding(padding: const EdgeInsets.only(bottom: 6), child: Text(t, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)));
+  Widget _buildTextField(TextEditingController c, String h, IconData i, [TextInputType t = TextInputType.text]) => TextFormField(controller: c, keyboardType: t, validator: (v) => (v == null || v.isEmpty) ? 'Campo obligatorio' : null, decoration: _inputDecoration(h).copyWith(prefixIcon: Icon(i, color: Colors.grey)));
+  InputDecoration _inputDecoration(String h) => InputDecoration(hintText: h, filled: true, fillColor: Colors.grey.shade50, contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15), border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.grey.shade300)), focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.blue.shade900, width: 2)));
+  Widget _radioOption(String v) => Row(children: [Radio(value: v, groupValue: gender, activeColor: Colors.blue.shade900, onChanged: (val) => setState(() => gender = val.toString())), Text(v)]);
+  Widget _radioOptionMarital(String v) => Row(children: [Radio(value: v, groupValue: maritalStatus, activeColor: Colors.blue.shade900, onChanged: (val) => setState(() => maritalStatus = val.toString())), Text(v)]);
+  
+  Future<void> _pickDate() async {
+    final p = await showDatePicker(context: context, initialDate: DateTime(2000), firstDate: DateTime(1900), lastDate: DateTime.now(), locale: const Locale('es', 'ES'));
+    if (p != null) setState(() { selectedDate = p; dobController.text = DateFormat('dd/MM/yyyy').format(p); });
   }
 
   void _next() {
-    // Validar campos obligatorios básicos
-    if (nameController.text.isEmpty ||
-        fnameController.text.isEmpty ||
-        gender == null ||
-        selectedDate == null ||
-        addressController.text.isEmpty ||
-        pinController.text.isEmpty) {
-      
-      _alert("Por favor, complete todos los campos obligatorios.");
-      return;
+    if (_formKey.currentState!.validate()) {
+      // AQUÍ ESTÁ EL CAMBIO: NO LLAMAMOS A LA BD, PASAMOS DATOS A LA SIGUIENTE PÁGINA
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => Signup2Page(
+            formNo: formNo,
+            // Pasamos todos los datos recopilados
+            name: nameController.text,
+            dob: dobController.text,
+            gender: gender,
+            email: emailController.text,
+            marital: maritalStatus,
+            address: addressController.text,
+            city: cityController.text,
+            cp: pinController.text,
+            state: stateController.text,
+          ),
+        ),
+      );
     }
-
-    // Navegar a la página 2
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => Signup2Page(formNo: formNo),
-      ),
-    );
-  }
-
-  void _alert(String msg) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("Aviso"),
-        content: Text(msg),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("OK"),
-          )
-        ],
-      ),
-    );
   }
 }
