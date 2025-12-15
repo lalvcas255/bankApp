@@ -69,7 +69,7 @@ class _FastCashPageState extends State<FastCashPage> {
 
                   const SizedBox(height: 30),
 
-                  /// GRID DE BOTONES DE CANTIDAD
+                  /// Posicionamiento Botones de Cantidad
                   Wrap(
                     spacing: 15, // Espacio horizontal entre botones
                     runSpacing: 15, // Espacio vertical entre filas
@@ -131,9 +131,7 @@ class _FastCashPageState extends State<FastCashPage> {
     );
   }
 
-  // ==========================================
-  // LÓGICA DE RETIRADA
-  // ==========================================
+  // Lógica de Retirada
 
   Future<void> withdrawQuickCash(double amount) async {
     setState(() {
@@ -153,7 +151,7 @@ class _FastCashPageState extends State<FastCashPage> {
         // 2. Realizar transacción
         await DatabaseHelper.instance.addTransaction(
           widget.pin,
-          'Withdrawal', // Usamos Withdrawal para que cuente como retiro
+          'Withdrawal', // Usar Withdrawal para que cuente como retiro
           amount,
         );
 
@@ -174,10 +172,8 @@ class _FastCashPageState extends State<FastCashPage> {
     }
   }
 
-  // ==========================================
-  // ALERTAS DE DISEÑO
-  // ==========================================
-
+  // Alerta de Diseño
+  
   void showAlert(String msg) {
     final Color bankPrimaryColor = Colors.blue.shade900;
     showDialog(

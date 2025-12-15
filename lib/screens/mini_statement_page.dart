@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// 1. Importamos el helper de base de datos
 import 'database_helper.dart';
 
 class MiniStatementPage extends StatefulWidget {
@@ -25,9 +24,8 @@ class _MiniStatementPageState extends State<MiniStatementPage> {
     loadMiniStatement();
   }
 
-  // ============================================================
-  // CARGAR MOVIMIENTOS
-  // ============================================================
+  // Carga Movimiento
+
   void loadMiniStatement() async {
     try {
       final db = await DatabaseHelper.instance.database;

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// 1. IMPORTA ESTO
 import 'package:flutter_localizations/flutter_localizations.dart'; 
 import 'screens/login_page.dart';
 
@@ -16,14 +15,14 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'ATM App',
 
-      // --- 2. AÑADE ESTOS DELEGATES ---
+      // Delegates
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
 
-      // --- 3. AÑADE LOS IDIOMAS SOPORTADOS ---
+      // Idiomas Soportados
       supportedLocales: const [
         Locale('es', 'ES'), // Español
         Locale('en', 'US'), // Inglés

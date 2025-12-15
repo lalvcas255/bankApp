@@ -12,12 +12,11 @@ class DatabaseHelper {
   Future<Database> get database async {
     if (_database != null) return _database!;
 
-    // --- CONFIGURACIÓN PARA PC (WINDOWS/LINUX) ---
+    // Configuración para PC (Windows/Linux)
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
       sqfliteFfiInit();
       databaseFactory = databaseFactoryFfi;
     }
-    // ---------------------------------------------
 
     _database = await _initDB('bank_final_v4.db'); 
     return _database!;
@@ -75,10 +74,7 @@ class DatabaseHelper {
     )
     ''');
   }
-
-  // ============================================================
   // MÉTODOS DE GESTIÓN DE USUARIOS
-  // ============================================================
 
   /// Registro completo de usuario
   Future<void> registerUser({
@@ -99,7 +95,7 @@ class DatabaseHelper {
   }) async {
     final db = await instance.database;
     
-    // Verificamos si el PIN ya existe
+    // Verificar si el PIN ya existe
     final result = await db.query('users', where: 'pin = ?', whereArgs: [pin]);
     
     if (result.isEmpty) {
@@ -134,7 +130,7 @@ class DatabaseHelper {
     }
   }
 
-  /// NUEVO: Eliminar cuenta validando credenciales
+  /// Eliminar cuenta validando credenciales
   Future<bool> deleteAccount(String cardNumber, String pin) async {
     final db = await instance.database;
     
@@ -159,9 +155,7 @@ class DatabaseHelper {
     });
   }
 
-  // ============================================================
-  // MÉTODOS OPERATIVOS (CAJERO)
-  // ============================================================
+  // Métodos Operativos (Cajero)
 
   Future<double> getBalance(String pin) async {
     final db = await instance.database;

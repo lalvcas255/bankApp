@@ -93,24 +93,22 @@ class _Signup3PageState extends State<Signup3Page> {
 
                     const SizedBox(height: 25),
 
-                    // --- SECCIÓN CORREGIDA: TIPO DE CUENTA ---
+                    // Tipo de Cuenta
                     const Text(
                       "Tipo de Cuenta:",
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 10),
                     
-                    // AQUI ESTÁ EL CAMBIO: Usamos Row para ponerlos en horizontal
+                    // Row para ponerlos en horizontal
                     Row(
                       children: [
-                        // Usamos Expanded para que ocupen el mismo espacio
+                        // Expanded para que ocupen el mismo espacio
                         Expanded(child: _radio("Cuenta Ahorro")),
                         const SizedBox(width: 10), // Espacio entre opciones
                         Expanded(child: _radio("Cuenta Corriente")),
                       ],
                     ),
-                    // Si quieres la tercera opción, puedes ponerla debajo o en la misma fila si cabe
-                    // _radio("Depósito Fijo"), 
 
                     const SizedBox(height: 25),
 
@@ -136,7 +134,7 @@ class _Signup3PageState extends State<Signup3Page> {
                     ),
                     const SizedBox(height: 10),
 
-                    // Organizamos los checkbox en dos columnas para ahorrar espacio
+                    // Organizar los checkbox en dos columnas para ahorrar espacio
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -219,9 +217,7 @@ class _Signup3PageState extends State<Signup3Page> {
     );
   }
 
-  // -----------------------------
   // Componentes UI
-  // -----------------------------
 
   Widget _radio(String label) {
     // Quitamos el Row interno para que el Row principal controle la alineación
@@ -261,9 +257,8 @@ class _Signup3PageState extends State<Signup3Page> {
     );
   }
 
-  // -----------------------------
+
   // LÓGICA DE REGISTRO
-  // -----------------------------
 
   void _submit() async {
     if (accountType == null) {
@@ -280,8 +275,8 @@ class _Signup3PageState extends State<Signup3Page> {
     String pin = (random.nextInt(9000) + 1000).toString();
 
     try {
-      // AQUÍ DEBERÍAS USAR EL MÉTODO registerUser SI QUIERES GUARDAR TODO EL FORMULARIO
-      // Por ahora usamos initUser (simple) como en tu código original
+      // MÉTODO initUser para guardar todo el formulario
+ 
       await DatabaseHelper.instance.initUser(pin, cardNo);
       
       if (!mounted) return;

@@ -149,9 +149,7 @@ class _WithdrawPageState extends State<WithdrawPage> {
     );
   }
 
-  // ==========================================
   // LÓGICA DE RETIRADA
-  // ==========================================
 
   Future<void> withdrawMoney() async {
     FocusScope.of(context).unfocus();
@@ -213,9 +211,7 @@ class _WithdrawPageState extends State<WithdrawPage> {
     }
   }
 
-  // ==========================================
   // ALERTAS DE DISEÑO
-  // ==========================================
 
   void showAlert(String msg) {
     final Color bankPrimaryColor = Colors.blue.shade900;

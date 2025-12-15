@@ -25,7 +25,7 @@ class _PinChangePageState extends State<PinChangePage> {
       // 1. FONDO SÓLIDO AZUL
       backgroundColor: bankPrimaryColor,
       
-      // Bloqueamos la interacción mientras se guarda
+      // Bloquear la interacción mientras se guarda
       body: AbsorbPointer(
         absorbing: isProcessing,
         child: Center(
@@ -159,9 +159,7 @@ class _PinChangePageState extends State<PinChangePage> {
     );
   }
 
-  // ==========================================
-  // LÓGICA DE CAMBIO DE PIN
-  // ==========================================
+    // Lógica de Cambio de Pin
 
   void changePin() async {
     FocusScope.of(context).unfocus();

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'signup2_class.dart'; // <--- IMPORTANTE: Esto dará error hasta que hagas el paso 2
+import 'signup2_class.dart'; 
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -135,7 +135,8 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 
-  // --- HELPERS ---
+  // Helpers
+  
   Widget _buildLabel(String t) => Padding(padding: const EdgeInsets.only(bottom: 6), child: Text(t, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)));
   Widget _buildTextField(TextEditingController c, String h, IconData i, [TextInputType t = TextInputType.text]) => TextFormField(controller: c, keyboardType: t, validator: (v) => (v == null || v.isEmpty) ? 'Campo obligatorio' : null, decoration: _inputDecoration(h).copyWith(prefixIcon: Icon(i, color: Colors.grey)));
   InputDecoration _inputDecoration(String h) => InputDecoration(hintText: h, filled: true, fillColor: Colors.grey.shade50, contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15), border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.grey.shade300)), focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.blue.shade900, width: 2)));
@@ -149,13 +150,13 @@ class _SignupPageState extends State<SignupPage> {
 
   void _next() {
     if (_formKey.currentState!.validate()) {
-      // AQUÍ ESTÁ EL CAMBIO: NO LLAMAMOS A LA BD, PASAMOS DATOS A LA SIGUIENTE PÁGINA
+    
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => Signup2Page(
             formNo: formNo,
-            // Pasamos todos los datos recopilados
+
             name: nameController.text,
             dob: dobController.text,
             gender: gender,

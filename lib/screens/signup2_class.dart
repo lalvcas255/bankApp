@@ -3,7 +3,7 @@ import 'database_helper.dart';
 import 'login_page.dart';
 
 class Signup2Page extends StatefulWidget {
-  // Recibimos todos los datos de la Página 1
+  // Recibir todos los datos de la Página 1
   final String formNo;
   final String name;
   final String dob;
@@ -40,7 +40,7 @@ class _Signup2PageState extends State<Signup2Page> {
   String? accountType;
   bool isDeclared = false;
   
-  // Servicios (solo visuales por ahora, los guardaremos como texto)
+  // Servicios (solo visuales por ahora, se guardarán como texto)
   bool atm = false;
   bool internet = false;
   bool mobile = false;

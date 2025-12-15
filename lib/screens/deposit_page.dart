@@ -23,7 +23,7 @@ class _DepositPageState extends State<DepositPage> {
       // 1. Fondo sólido azul (sin imagen de fondo para evitar errores visuales)
       backgroundColor: bankPrimaryColor,
       
-      // Bloqueamos la pantalla si se está procesando
+      // Bloquear la pantalla si se está procesando
       body: AbsorbPointer(
         absorbing: isProcessing,
         child: Center(
@@ -139,7 +139,7 @@ class _DepositPageState extends State<DepositPage> {
     );
   }
 
-  // --- LÓGICA DE DEPÓSITO ---
+  // Lógica de Depósito
 
   Future<void> depositMoney() async {
     FocusScope.of(context).unfocus();
@@ -171,7 +171,7 @@ class _DepositPageState extends State<DepositPage> {
 
       if (!mounted) return;
 
-      // Éxito: Usamos un icono verde en la alerta
+      // Usar un icono verde en la alerta
       showSuccessAlert("${parsedAmount.toStringAsFixed(2)} € ingresados correctamente.");
 
     } catch (e) {

@@ -5,7 +5,6 @@ import 'withdraw_page.dart';
 import 'fast_cash_page.dart';
 import 'mini_statement_page.dart';
 import 'pin_change_page.dart';
-// import 'balance_enquiry_page.dart'; // <--- ELIMINADO
 import 'login_page.dart';
 
 class MainClass extends StatelessWidget {
@@ -70,7 +69,8 @@ class MainClass extends StatelessWidget {
                 
                 const SizedBox(height: 30),
 
-                /// BOTONES DE OPERACIONES (Ya no está Consulta Saldo)
+                /// BOTONES DE OPERACIONES
+                /// 
                 _buildButton(context, "INGRESAR DINERO", Icons.arrow_downward, bankPrimaryColor, () {
                   Navigator.push(context, MaterialPageRoute(builder: (_) => DepositPage(pin: pin)));
                 }),
@@ -90,8 +90,6 @@ class MainClass extends StatelessWidget {
                 _buildButton(context, "CAMBIAR PIN", Icons.lock_reset, bankPrimaryColor, () {
                   Navigator.push(context, MaterialPageRoute(builder: (_) => PinChangePage(pin: pin)));
                 }),
-
-                // --- AQUÍ ESTABA "CONSULTA SALDO", HA SIDO ELIMINADO ---
 
                 const SizedBox(height: 20),
                 const Divider(),
